@@ -2,55 +2,28 @@ package main // un package es el nombre de la carpeta en donde esta guardado. En
 
 import (
 	"fmt"
-	"log"
-	"strconv"
 )
 
-func isEven(number int) bool {
-	return number%2 == 0
-}
-
-func logIn(user string, password string) bool {
-	if user == "juandiego" && password == "Juandiego02" {
-		return true
-	}
-	return false
-}
-
 func main() {
-	valor1 := 1
-	valor2 := 2
-
-	if valor1 == 1 {
-		fmt.Println("Es 1")
-	} else {
-		fmt.Println("No es 1")
+	switch modulo := 5 % 2; modulo {
+	case 0:
+		fmt.Println("Es par")
+	default:
+		fmt.Println("Es impar")
 	}
 
-	// With and
-	if valor1 == 1 && valor2 == 2 {
-		fmt.Println("Es verdad, AND")
+	// Sin condicion
+	mes := 6
+	switch {
+	case mes <= 3:
+		fmt.Println("Primer Trimestre")
+	case mes > 3 && mes <= 6:
+		fmt.Println("Segundo Trimestre")
+	case mes > 6 && mes <= 9:
+		fmt.Println("Tercer Trimestre")
+	case mes > 9 && mes <= 12:
+		fmt.Println("Cuarto Trimestre")
+	default:
+		fmt.Println("Este no es un mes valido")
 	}
-
-	// With or
-	if valor1 == 0 || valor2 == 2 {
-		fmt.Println("Es verdad, OR")
-	}
-
-	// Convertir texto a número
-
-	value, err := strconv.Atoi("53")
-
-	//  nil es un identificador predeclarado que representa el valor cero para un puntero, un canal, una función, una interfaz, un mapa o un tipo de trozo.
-	if err != nil {
-		log.Fatal(err) // va a imprimir el error y despues terminara el codigo
-	}
-
-	fmt.Println("Value:", value)
-
-	isNumberEven := isEven(3)
-	isLoggin := logIn("juandiego", "Juandiego02")
-
-	fmt.Printf("¿El numero es par? : %t\n", isNumberEven)
-	fmt.Printf("¿Es correcto los datos? : %t\n", isLoggin)
 }
