@@ -2,26 +2,35 @@ package main // un package es el nombre de la carpeta en donde esta guardado. En
 
 import "fmt"
 
-func main() {
-	const helloMessage string = "hello"
-	const worldMessage string = "world"
-
-	fmt.Println(helloMessage, worldMessage)
-
-	// Printf
-	nombre := "Platzi"
-	cursos := 500
-	// Con valores seguros
-	fmt.Printf("%s tiene mas de %d cursos\n", nombre, cursos)
-	// Cuando no sabemos que tipo de dato es:
-	fmt.Printf("%v tiene más de %v cursos\n", nombre, cursos)
-
-	// Sprintf
-	message := fmt.Sprintf("%v tiene más de %v cursos\n", nombre, cursos)
+func printMessage(message string) {
 	fmt.Println(message)
+}
 
-	// Tipo de datos:
-	fmt.Printf("helloMessage: %T\n", helloMessage)
-	fmt.Printf("cursos: %T\n", cursos)
+func printAllMessages(params ...string) {
+	var message string
 
+	for _, s := range params {
+		message += s + " "
+	}
+
+	fmt.Printf("Messages: %v\n", message)
+}
+
+func sum(a int, b int) int {
+	return a + b
+}
+
+func sumAndRest(a, b int) (c, d int) {
+	return a + b, a - b
+}
+
+func main() {
+	printMessage("hola mundo")
+	printAllMessages("hola", "mundo", "quiero comer", "ceviche")
+
+	value := sum(2, 4)
+	fmt.Println("Value:", value)
+
+	_, restValue := sumAndRest(2, 4)
+	fmt.Println("Value 2:", restValue)
 }
