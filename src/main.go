@@ -1,33 +1,27 @@
 package main // un package es el nombre de la carpeta en donde esta guardado. En este caso como es el archivo principal, será main
 
-import (
-	"fmt"
-	"math"
-)
-
-func getPerimeter(sides uint, length uint) uint {
-	return sides * length
-}
-
-func getArea(sides uint, length uint) float64 {
-	//So, angle t = 180/n
-	// Now, tan(t) = a/2*h
-	// So, h = a/(2*tan(t))
-	// Area of each triangle = (base * height)/2 = a * a/(4*tan(t))
-	// So, area of the polygon,
-
-	area := float64((length * length * sides)) / (4 * math.Tan(math.Pi/float64(sides)))
-	return area
-}
+import "fmt"
 
 func main() {
+	const helloMessage string = "hello"
+	const worldMessage string = "world"
 
-	const sides uint = 10
-	const length uint = 9
+	fmt.Println(helloMessage, worldMessage)
 
-	perimeter := getPerimeter(sides, length)
-	area := getArea(sides, length)
+	// Printf
+	nombre := "Platzi"
+	cursos := 500
+	// Con valores seguros
+	fmt.Printf("%s tiene mas de %d cursos\n", nombre, cursos)
+	// Cuando no sabemos que tipo de dato es:
+	fmt.Printf("%v tiene más de %v cursos\n", nombre, cursos)
 
-	fmt.Printf("The perimeter is: %d and area is: %f", perimeter, area)
+	// Sprintf
+	message := fmt.Sprintf("%v tiene más de %v cursos\n", nombre, cursos)
+	fmt.Println(message)
+
+	// Tipo de datos:
+	fmt.Printf("helloMessage: %T\n", helloMessage)
+	fmt.Printf("cursos: %T\n", cursos)
 
 }
