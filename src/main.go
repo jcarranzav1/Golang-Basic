@@ -2,35 +2,61 @@ package main // un package es el nombre de la carpeta en donde esta guardado. En
 
 import "fmt"
 
-func printMessage(message string) {
-	fmt.Println(message)
-}
-
-func printAllMessages(params ...string) {
-	var message string
-
-	for _, s := range params {
-		message += s + " "
+func main() {
+	fmt.Println("-------------For condicional-------------")
+	// For condicional
+	for i := 0; i <= 5; i++ {
+		fmt.Println(i)
 	}
 
-	fmt.Printf("Messages: %v\n", message)
-}
+	fmt.Println("-------------For while-------------")
+	// For while
+	counter := 0
+	for counter <= 5 {
+		fmt.Println(counter)
+		counter++
+	}
 
-func sum(a int, b int) int {
-	return a + b
-}
+	fmt.Println("-------------For forever with break-------------")
+	//For forever
+	counterForever := 0
+	for {
+		fmt.Println(counterForever)
+		counterForever++
+		if counterForever > 12 {
+			break
+		}
+	}
 
-func sumAndRest(a, b int) (c, d int) {
-	return a + b, a - b
-}
+	fmt.Println("-------------Continue-------------")
+	//exit loop
+	sum := 0
+	for i := 1; i < 5; i++ {
+		if i%2 != 0 { // skip odd numbers
+			continue
+		}
+		sum += i
+	}
+	fmt.Println(sum)
 
-func main() {
-	printMessage("hola mundo")
-	printAllMessages("hola", "mundo", "quiero comer", "ceviche")
+	fmt.Println("-------------For Range-------------")
+	//For-each range loop
+	arreglo := [6]int{0, 1, 4, 6, 10, 9}
+	fmt.Println("Arreglo:", arreglo)
 
-	value := sum(2, 4)
-	fmt.Println("Value:", value)
+	fmt.Println("Primer ejemplo")
+	for i, j := range arreglo {
+		fmt.Printf("indice i: %d tiene como valor #%d\n", i, j)
+	}
 
-	_, restValue := sumAndRest(2, 4)
-	fmt.Println("Value 2:", restValue)
+	fmt.Println("Segundo ejemplo")
+	for i := range arreglo {
+		fmt.Printf("Valor de i: %d\n", i)
+	}
+
+	fmt.Println("Tercer ejemplo")
+	for _, j := range arreglo {
+		fmt.Printf("Valor de i: %d\n", j)
+	}
+
 }
