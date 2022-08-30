@@ -1,62 +1,56 @@
 package main // un package es el nombre de la carpeta en donde esta guardado. En este caso como es el archivo principal, será main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"strconv"
+)
+
+func isEven(number int) bool {
+	return number%2 == 0
+}
+
+func logIn(user string, password string) bool {
+	if user == "juandiego" && password == "Juandiego02" {
+		return true
+	}
+	return false
+}
 
 func main() {
-	fmt.Println("-------------For condicional-------------")
-	// For condicional
-	for i := 0; i <= 5; i++ {
-		fmt.Println(i)
+	valor1 := 1
+	valor2 := 2
+
+	if valor1 == 1 {
+		fmt.Println("Es 1")
+	} else {
+		fmt.Println("No es 1")
 	}
 
-	fmt.Println("-------------For while-------------")
-	// For while
-	counter := 0
-	for counter <= 5 {
-		fmt.Println(counter)
-		counter++
+	// With and
+	if valor1 == 1 && valor2 == 2 {
+		fmt.Println("Es verdad, AND")
 	}
 
-	fmt.Println("-------------For forever with break-------------")
-	//For forever
-	counterForever := 0
-	for {
-		fmt.Println(counterForever)
-		counterForever++
-		if counterForever > 12 {
-			break
-		}
+	// With or
+	if valor1 == 0 || valor2 == 2 {
+		fmt.Println("Es verdad, OR")
 	}
 
-	fmt.Println("-------------Continue-------------")
-	//exit loop
-	sum := 0
-	for i := 1; i < 5; i++ {
-		if i%2 != 0 { // skip odd numbers
-			continue
-		}
-		sum += i
-	}
-	fmt.Println(sum)
+	// Convertir texto a número
 
-	fmt.Println("-------------For Range-------------")
-	//For-each range loop
-	arreglo := [6]int{0, 1, 4, 6, 10, 9}
-	fmt.Println("Arreglo:", arreglo)
+	value, err := strconv.Atoi("53")
 
-	fmt.Println("Primer ejemplo")
-	for i, j := range arreglo {
-		fmt.Printf("indice i: %d tiene como valor #%d\n", i, j)
+	//  nil es un identificador predeclarado que representa el valor cero para un puntero, un canal, una función, una interfaz, un mapa o un tipo de trozo.
+	if err != nil {
+		log.Fatal(err) // va a imprimir el error y despues terminara el codigo
 	}
 
-	fmt.Println("Segundo ejemplo")
-	for i := range arreglo {
-		fmt.Printf("Valor de i: %d\n", i)
-	}
+	fmt.Println("Value:", value)
 
-	fmt.Println("Tercer ejemplo")
-	for _, j := range arreglo {
-		fmt.Printf("Valor de i: %d\n", j)
-	}
+	isNumberEven := isEven(3)
+	isLoggin := logIn("juandiego", "Juandiego02")
 
+	fmt.Printf("¿El numero es par? : %t\n", isNumberEven)
+	fmt.Printf("¿Es correcto los datos? : %t\n", isLoggin)
 }
