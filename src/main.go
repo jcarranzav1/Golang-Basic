@@ -1,11 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	pk "JD/Golang/Curso_Basico/src/mypackage"
+)
 
 // structs es un tipo definido por el usuario que permite agrupar/combinar elementos de tipos posiblemente diferentes en un único tipo. Es muy similar al concepto de clases en POO.
 // struct es una colección de campos.
 
-type player struct {
+type Player struct {
 	x, y    int // podemos hacerlo mas compacto combinando los campos del mismo tipo
 	name    string
 	species string
@@ -13,13 +17,16 @@ type player struct {
 }
 
 func main() {
-	player1 := player{10, 10, "Juan", "human", true}
-	fmt.Println("Player 1:", player1)
+	var player1 pk.PlayerPublic
+	// var player2 pk.playerPrivate
+	player1.X = 20
+	player1.Name = "juan"
 
-	fmt.Println("\n***************** other way *************************")
-	var player2 player
+	// player1.money = 100
 
-	player2.name = "Diego"
-	fmt.Println("Player 2:", player2)
+	fmt.Println(player1)
 
+	pk.PrintMessage("Hola Platzi")
+
+	// pk.printMessage1("Hola")
 }
