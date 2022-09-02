@@ -1,7 +1,6 @@
 package main
 
 import (
-	pkPC "JD/Golang/Curso_Basico/src/pcpackage"
 	"fmt"
 )
 
@@ -9,6 +8,11 @@ type pc struct {
 	ram   int
 	disk  int
 	brand string
+}
+
+func (myPC pc) String() string {
+	//La estructura de datos " Struct " tiene un método llamado " String " , que podemos sobrescribir para personalizar la salida a consola de los datos del struct.
+	return fmt.Sprintf("Tengo %d GB RAM, %d GB Disco y es una %s", myPC.ram, myPC.disk, myPC.brand)
 }
 
 func (myPC pc) ping() { //creamos el metodo ping para el struct pc
@@ -40,23 +44,8 @@ func main() {
 
 	pc1.ping()
 
-	fmt.Println(pc1)
 	pc1.duplicateRAM()
 
 	fmt.Println(pc1)
-	pc1.duplicateRAM()
-
-	fmt.Println(pc1)
-
-	fmt.Println("\n**************** EXERCISE ***********************")
-
-	var pc2 pkPC.PC
-
-	pc2.SetSpecs(64, 1000, "Asus")
-	pc2.PrintSpecs()
-
-	pc2.DuplicateRAM()
-
-	fmt.Println("RAM: ", pc2.GetRam())
 
 }
