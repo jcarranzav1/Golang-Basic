@@ -1,66 +1,63 @@
 package main
 
-import (
-	"fmt"
-	"reflect"
-	"strings"
-)
+import "fmt"
 
 func main() {
-	var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
-	for i, v := range pow {
-		fmt.Printf("2**%d = %d\n", i, v)
+	// Un map asigna claves a valores, parecido a diccionario en python o un hash map
+	//MAPS
+
+	//Declaration
+	var map_1 = map[string]int32{
+		"Car":      50000,
+		"House":    20000,
+		"Computer": 1000,
 	}
 
-	text := "ala"
-	value := isPalindromo(text)
-	value2 := isPalindromoRune(text)
+	fmt.Println(map_1)
 
-	fmt.Printf("¿%s es palindromo? : %t \n", text, value)
-	fmt.Printf("¿%s es palindromo2? : %t \n", text, value2)
+	//Another type of declaration
+	map_2 := make(map[int]int)
+	map_2[10] = 1
+	map_2[12] = 4
+	map_2[8] = 5
+	map_2[11] = 2
 
-	fmt.Println("************* Range continued *******************")
-
-	pow2 := make([]int, 10)
-
-	for i := range pow2 {
-		pow2[i] = 1 << uint(i) // == 2**i
-	}
-	for _, value := range pow2 {
-		fmt.Printf("%d\n", value)
-	}
-}
-
-func isPalindromo(text string) bool {
-	// cuando accedemos al indice de un string (osea apuntamos al caracter), nos arrojara un int que es su codigo acsi, asi que necesitamos convertirlo a string.
-
-	var textReverse string
-
-	text = strings.ToLower(text)
-
-	for i := len(text) - 1; i >= 0; i-- {
-		textReverse += string(text[i])
+	//Displaying a map
+	for i, v := range map_2 {
+		fmt.Println(i, "=", v) //There is no order at the moment of displaying a map
 	}
 
-	if text == textReverse {
-		return true
-	}
+	//Knowing if a value exist
+	//If we display map_1["Car"] it will show the value
+	value := map_1["Car"]
+	fmt.Println("Car", value)
 
-	return false
-}
+	//But what if it doesn't exist
+	value = map_1["Vehicle"]
+	fmt.Println("Vehicle", value) //It will show zero
 
-func isPalindromoRune(text string) bool {
-	//los slices a comparar seran runes, no strings (runes es el valor en acsi de un character)
-	textSlice := []rune(text)
-	reverseSlice := make([]rune, len(textSlice))
+	//If we want to know if it exists, it must be done with the second returing value
+	value, ok := map_1["Vehicle"]
+	//it will return a bool depending on if exists or not
+	fmt.Println("Vehicle exist:", ok, "  value:", value)
 
-	for i := len(reverseSlice) - 1; i >= 0; i-- {
-		reverseSlice[len(textSlice)-1-i] = (textSlice[i])
-	}
+	fmt.Println("\n******** Add new key/value pair and update ************")
 
-	if reflect.DeepEqual(textSlice, reverseSlice) {
-		return true
-	}
+	map_1["PS5"] = 9000
+	map_1["House"] = 500000
 
-	return false
+	fmt.Println(map_1)
+
+	fmt.Println("\n******** Delete  key/value pair  ***********")
+	delete(map_1, "PS5")
+	fmt.Println(map_1)
+
+	fmt.Println("\n******** Modficacion del map  ***********")
+	//  Como sabemos los mapas son de tipo referencial. Entonces, cuando asignamos un mapa existente a una nueva variable, ambos mapas aún se refieren a la misma estructura de datos subyacente. Entonces, cuando actualicemos un mapa, se reflejará en otro mapa.
+
+	new_map := map_1
+
+	new_map["Car"] = 1200
+	fmt.Println("map_1:", map_1, " new_map:", new_map)
+
 }
