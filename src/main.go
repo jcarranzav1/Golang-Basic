@@ -2,50 +2,90 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"reflect"
 )
 
-type pc struct {
-	ram   int
-	disk  int
-	brand string
+// Si los structs que tenemos en el código tienen métodos que hacen algo en común (Cálculos, obtener data, etc), es posible ejecutar éstos métodos usando una interfaz, de esta forma evitamos hacer código por cada struct.
+// Esta es una forma de crear interfaces de forma implicita
+type Figure interface {
+	Area() float64
+	Perimeter() float64
 }
 
-func (myPC pc) String() string {
-	//La estructura de datos " Struct " tiene un método llamado " String " , que podemos sobrescribir para personalizar la salida a consola de los datos del struct.
-	return fmt.Sprintf("Tengo %d GB RAM, %d GB Disco y es una %s", myPC.ram, myPC.disk, myPC.brand)
+type Circle struct {
+	radius float64
 }
 
-func (myPC pc) ping() { //creamos el metodo ping para el struct pc
-	fmt.Println(myPC.brand, "Pong")
-
+func (c Circle) Area() float64 {
+	return math.Pi * c.radius * c.radius
 }
 
-func (myPC *pc) duplicateRAM() { //hacer esto me recuerda mucho cuando crear un metodo donde modifique el valor de un propertu usando this
-	myPC.ram = myPC.ram * 2
+func (c Circle) Perimeter() float64 {
+	return math.Pi * 2 * c.radius
+}
+
+type Square struct {
+	side float64
+}
+
+func (s Square) Area() float64 {
+	return s.side * s.side
+}
+
+func (s Square) Perimeter() float64 {
+	return 4 * s.side
+}
+
+func Calcular(f Figure) {
+	fmt.Println("El área del ", reflect.TypeOf(f).Name(), "es:", f.Area())
+	fmt.Println("El perímetro del ", reflect.TypeOf(f).Name(), "es:", f.Perimeter())
+}
+
+func LessArea(s1, s2 Figure) Figure {
+	if s1.Area() < s2.Area() {
+		return s1
+	}
+	return s2
 }
 
 func main() {
+	mySquare := Square{side: 2}
+	myCircle := Circle{radius: 4}
 
-	// con & accedemos a la posicion de memoria de una variable, mientra que con * accedemos al valor de la posicion de memoria.
-	// Por eso con & se usa para crear punteros de una variable, y con * es para entregar el valor que tiene ese puntero.
+	Calcular(mySquare)
+	Calcular(myCircle)
 
-	a := 50
-	b := &a
+	minArea := LessArea(myCircle, mySquare)
 
-	fmt.Println(b)
-	fmt.Println(*b)
+	fmt.Println("The smallest area of the two figures is", reflect.TypeOf(minArea).Name())
 
-	*b = 100
-	fmt.Println(a)
+	fmt.Println("\n*********** empty interface ****************")
+	// Una interfaz vacía puede contener valores de cualquier tipo. Las interfaces vacías son utilizadas por el código que maneja valores de tipo desconocido.
 
-	fmt.Println("\n**************** pointer with structs ***********************")
+	var value interface{}
+	value = "hola"
 
-	pc1 := pc{ram: 16, disk: 1000, brand: "Asus"}
+	fmt.Println("Value: ", value)
 
-	pc1.ping()
+	value = 12
 
-	pc1.duplicateRAM()
+	fmt.Println("Value: ", value)
 
-	fmt.Println(pc1)
+	fmt.Println("\n*********** Lista de interfaces ****************")
+
+	// Lista de interfaces
+
+	/*  Usualmente en muchos lenguajes de programacion mucho mas flexibles  a una misma lista puedes agregar diferente tipo de datos, por ejemplo: [1, "bo", true]. En GO no puedes hacer eso con los slices, porque tienes que indicar que tipo de dato vas a ingresar
+
+	Entonces, ¿como podemos simular eso en GO?
+
+	creamos un slice, lo llamaremos myInterface, y este va a instanciar  un slice de interfaces vacias. Como sabemos las interfaces vacias aceptan valores de cualquier tipo. En otras palabras creamos un slice donde cada elemento de este es un slice vacio.
+
+	*/
+
+	myInterface := []interface{}{"Hola", 1, 2.53, true}
+
+	fmt.Println(myInterface...) //con los tres punto imprimimos los elementos sin el array, parecido al spread de js
 
 }
