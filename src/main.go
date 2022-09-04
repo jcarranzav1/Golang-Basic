@@ -2,63 +2,87 @@ package main
 
 import "fmt"
 
-// Los canales son los elementos que nos van a permitir  enviar y recibir valores entre gorutinas (funciones que se esta ejecutando de manera concurrente)
-// los canales son tipados.
-
 /*
-ch <- v    // Send v to channel ch.
-v := <-ch  // Receive from ch, and
-           // assign value to v.
-Por defecto, los envíos y las recepciones se bloquean hasta que el otro lado esté listo. Esto permite que las goroutines se sincronicen sin bloqueos explícitos o variables de condición.
-
-El código de ejemplo suma los números en una porción, distribuyendo el trabajo entre dos goroutines. Una vez que ambas goroutines han completado su cálculo, calcula el resultado final.
+Por defecto, los canales no tienen búfer, lo que indica que solo aceptarán envíos (chan <-) si hay una recepción correspondiente (<- chan) que esté lista para recibir el valor enviado. Los canales almacenados permiten aceptar un número limitado de valores sin un receptor correspondiente para esos valores. Es posible crear un canal con un buff. Los canales con búfer se bloquean solo cuando el búfer está lleno. Del mismo modo, la recepción de un canal con búfer se bloquea solo cuando el búfer estará vacío.
 */
-
-func sum(s []int, c chan int) {
-	sum := 0
-	for _, v := range s {
-		sum += v
-	}
-	c <- sum
-}
-
-func listen(c <-chan int) { //hagamos que la funcion listen solo escuche (recived only)
-	value := <-c
-	fmt.Println("listen:", value)
-
-	// c <- 31 //sale error porque esta funcion solo puede recibir.
-
-	fmt.Println("la funcion listen it's over")
-
-}
-
-func write(c chan<- int) { //hagamos que la funcion write solo envie (send only)
-	c <- 7
-	// j := <-c  sale error porque esta funcion solo puede enviar.
-	// fmt.Println(j)
-	fmt.Println("write:", 7)
-	fmt.Println("la funcion write it's over")
-}
-
 func main() {
+	fmt.Println("\n**************** Buffered channel *****************")
+	ch := make(chan int, 2)
+	ch <- 1
+	ch <- 2
+	// ch <- 3 si agregamos este se generara un bloqueo, porque excede la capacidad del buffer
 
-	fmt.Println("\n**************** Firmas de la funcion *****************")
-	// Es necesario agregar firma en la funcion para que realizen las acciones que deben hacer. Listen solo tiene que recibir y write debe enviar.
-	c1 := make(chan int)
-	go listen(c1)
-	write(c1)
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
 
-	fmt.Println("\n**************** Second example *****************")
+	fmt.Println("\n**************** Range and close channel *****************")
 
-	s := []int{7, 2, 8, -9, 4, 0}
+	/*
+		Un emisor puede cerrar un canal para indicar que no se enviarán más valores. Los receptores pueden comprobar si un canal se ha cerrado asignando un segundo parámetro a la expresión de recepción: después de
 
-	c2 := make(chan int)
+		v, ok := <-ch
 
-	go sum(s[:len(s)/2], c2)
-	go sum(s[len(s)/2:], c2)
+		ok es falso si no hay más valores que recibir y el canal está cerrado.
 
-	x, y := <-c2, <-c2
+		El bucle for i := rango c recibe valores del canal repetidamente hasta que se cierra.
 
-	fmt.Println(x, y)
+		Nota: Sólo el emisor debe cerrar un canal, nunca el receptor. Enviar en un canal cerrado causará un panic.
+		Nota 2: Los canales no son como los archivos; normalmente no es necesario cerrarlos. El cierre sólo es necesario cuando el receptor debe saber que no hay más valores en camino, como para terminar un bucle de rango
+	*/
 
+	ch2 := make(chan int, 20)
+	go fibonacci(cap(ch2), ch2)
+
+	for i := range ch2 { //IMPRIME TODOS LOS VALORES DEL CANAL
+		fmt.Println(i)
+	}
+	fmt.Println("\n**************** SELECT *****************")
+
+	/*
+		La sentencia select permite que una goroutine espere en múltiples operaciones de comunicación.
+
+		Un select se bloquea hasta que uno de sus casos puede ejecutarse, entonces ejecuta ese caso. Elige uno al azar si hay varios listos.
+
+		Ejemplo:
+		// go func()... se lanza de manera concurrente:
+		// la línea fmt.Println(<-c) queda en espera hasta que haya algo que leer de <-c.
+		// Al ser lanzado concurrentemente, mientras dicha línea espera, se va a la ejecución de fibonacci(c, quit),
+		// que guardará valores en c <- x TANTAS VECES SE PRODUZCA LA ESPERA EN LA LINEA fmt.Println(<-c).
+		// Una vez sale del bucle, pasa a esperar case <-quit, que será satisfecho con quit <- 0, por lo que imprimirá "quit" y finalizará}
+
+		// el programa.
+	*/
+
+	ch3 := make(chan int)
+	quit := make(chan int)
+	go func() {
+		for i := 0; i < 10; i++ {
+			fmt.Println(<-ch3)
+		}
+		quit <- 0
+	}()
+	fibonacci2(ch3, quit)
+
+}
+
+func fibonacci(n int, c chan int) {
+	x, y := 0, 1
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
+	}
+	close(c)
+}
+
+func fibonacci2(c, quit chan int) {
+	x, y := 0, 1
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+		case <-quit:
+			fmt.Println("quit")
+			return
+		}
+	}
 }
