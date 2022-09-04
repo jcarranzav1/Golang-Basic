@@ -1,94 +1,64 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-)
+import "fmt"
+
+// Los canales son los elementos que nos van a permitir  enviar y recibir valores entre gorutinas (funciones que se esta ejecutando de manera concurrente)
+// los canales son tipados.
 
 /*
-	En los programas hasta ahora creados, las líneas aparecen de forma secuencial. Una línea no se ejecuta hasta que la anterior se complete, lo que es un comportamiento deseado en muchos casos.
+ch <- v    // Send v to channel ch.
+v := <-ch  // Receive from ch, and
+           // assign value to v.
+Por defecto, los envíos y las recepciones se bloquean hasta que el otro lado esté listo. Esto permite que las goroutines se sincronicen sin bloqueos explícitos o variables de condición.
 
-	Sin embargo también podemos toparnos con casos en los cuales una actividad no bloquea otra, al menos no si el tiempo que tomará en completarse es suficiente como para generar un bloqueo significativo. Algunas de estas acciones pueden ser tareas como una solicitud de lectura desde la red o la lectura de datos desde un archivo.
-
-	Go utiliza la concurrencia, que consiste en separar múltiples tareas de forma individual sin que estas bloqueen unas a las otras. Otra aproximación de otros lenguajes es el paralelismo.
-
-	La concurrencia es el poder ejecutar diferentes partes de un algoritmo, programa, solucion o tarea de forma independiente una de la otra, para que sin importar el orden en el que ejecutemos estas partes el resultado siempre sea igual.
-
-
-	Segun  Rob Pike creador de GO:
-	La concurrencia consiste en tratar muchas cosas a la vezen cambio el paralelismo consiste en hacer muchas cosas a la vez. No es lo mismo, pero está relacionado.
-
-	La concurrencia tiene que ver con la estructura, el paralelismo con la ejecución.
-
-	La meta de la concurrencia no es el paralelismo, si no es tener una buena estructura.
-
-	La concurrencia proporciona una forma de estructurar una solución para resolver un problema que puede (pero no necesariamente) ser paralelizable.
-
-	La concurrencia es una forma de estructurar un programa dividiéndolo en piezas que pueden ejecutarse de forma independiente. Este es el modelo de GO.
-
-	revisar: https://go.dev/talks/2012/waza.slide#28
-
+El código de ejemplo suma los números en una porción, distribuyendo el trabajo entre dos goroutines. Una vez que ambas goroutines han completado su cálculo, calcula el resultado final.
 */
 
-func say(text string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println(text)
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c <- sum
 }
 
-// la funcion main esta corriendo dentro de una go rutine, que una ves que termina de ejecutarse muere.
+func listen(c <-chan int) { //hagamos que la funcion listen solo escuche (recived only)
+	value := <-c
+	fmt.Println("listen:", value)
+
+	// c <- 31 //sale error porque esta funcion solo puede recibir.
+
+	fmt.Println("la funcion listen it's over")
+
+}
+
+func write(c chan<- int) { //hagamos que la funcion write solo envie (send only)
+	c <- 7
+	// j := <-c  sale error porque esta funcion solo puede enviar.
+	// fmt.Println(j)
+	fmt.Println("write:", 7)
+	fmt.Println("la funcion write it's over")
+}
 
 func main() {
 
-	var wg sync.WaitGroup
-	fmt.Println("Hello")
-	wg.Add(1)
+	fmt.Println("\n**************** Firmas de la funcion *****************")
+	// Es necesario agregar firma en la funcion para que realizen las acciones que deben hacer. Listen solo tiene que recibir y write debe enviar.
+	c1 := make(chan int)
+	go listen(c1)
+	write(c1)
 
-	go say("World", &wg) // agregando go, crearas una gorutine el cual se ejecutará de forma concurrente
-	wg.Wait()
+	fmt.Println("\n**************** Second example *****************")
 
-	wg.Add(1)
+	s := []int{7, 2, 8, -9, 4, 0}
 
-	go func(text string, wg *sync.WaitGroup) { // funcion anonima
-		defer wg.Done()
-		fmt.Println(text)
-	}("Bye", &wg)
+	c2 := make(chan int)
 
-	wg.Wait()
+	go sum(s[:len(s)/2], c2)
+	go sum(s[len(s)/2:], c2)
+
+	x, y := <-c2, <-c2
+
+	fmt.Println(x, y)
+
 }
-
-/*
-	func main() {
-		say("Hello")
-		go say("World")
-
-
-	}
-
-	cuando ejecutamos lo de arriba, veremos que World no se imprimirá, y esto es porque main se corre dentro una gorutina y una ves termine muere. Pues main termina a Hello porque la World se ejecuta de forma concurrente y no queda en el mismo hilo de ejecucion con main.
-
-	¿Como lo solucionamos?
-
-	Una accion basica, pero recomendable, es agregando un sleep.
-
-	func main() {
-		say("Hello")
-		go say("World")
-		time.Sleep(time.Second * 1)
-
-	}
-
-	Pero esta forma no es optima, porque estamos agregaando tiempo muerto
-
-	Hay una forma algo avanzado, usando wait group
-
-	Un WaitGroup espera a que una colección de goroutines termine su ejecución.
-	Para esto se una la WaitGroup.Add() ( wg.add(1) en el ejemplo de la clase).
-	El número entero indica el número de goroutines que debe esperar para finalizar la ejecución de la goroutine principal.
-
-	Cada vez que una goroutine termina su ejecución, llama el método Done(). Esto hace que el contador del WaitGroup se reduzca.
-	Cuando el contador llegue a zero la rutina principal continuará su ejecución.
-
-	vLa función wait() bloquea la rutina principal hasta que todas las demás rutinas del grupo hayan terminado.
-
-
-*/
